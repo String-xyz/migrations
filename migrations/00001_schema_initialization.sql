@@ -46,6 +46,28 @@ EXECUTE PROCEDURE update_updated_at_column();
 -- +goose StatementEnd
 
 -------------------------------------------------------------------------
+-- ORGANIZATION ---------------------------------------------------------
+-- +goose StatementBegin
+CREATE TABLE organization (
+  id UUID PRIMARY KEY NOT NULL DEFAULT UUID_GENERATE_V4(),
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  deactivated_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+  activated_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+  name TEXT NOT NULL,
+  description TEXT DEFAULT ''
+);
+-- +goose StatementEnd
+
+-- +goose StatementBegin
+CREATE OR REPLACE TRIGGER update_organization_updated_at
+  BEFORE UPDATE
+  ON organization
+  FOR EACH ROW
+EXECUTE PROCEDURE update_updated_at_column();
+-- +goose StatementEnd
+
+-------------------------------------------------------------------------
 -- PLATFORM -------------------------------------------------------------
 -- +goose StatementBegin
 CREATE TABLE platform (
@@ -355,7 +377,7 @@ EXECUTE PROCEDURE update_updated_at_column();
 -- +goose StatementEnd
 
 -------------------------------------------------------------------------
--- PLATFORM_MEMBER ------------------------------------------------------
+-- ORGANIZATION_MEMBER --------------------------------------------------
 -- +goose StatementBegin
 CREATE TABLE organization_member (
   id UUID PRIMARY KEY NOT NULL DEFAULT UUID_GENERATE_V4(),
@@ -435,7 +457,7 @@ CREATE TABLE member_invite (
   email TEXT NOT NULL,
   name TEXT DEFAULT '',
   invited_by UUID REFERENCES organization_member (id) DEFAULT NULL,
-  organization_id UUID NOT NULL REFERENCES organization (id);
+  organization_id UUID NOT NULL REFERENCES organization (id),
   role_id UUID REFERENCES member_role (id)
 );
 -- +goose StatementEnd
@@ -458,7 +480,7 @@ CREATE TABLE apikey (
   deactivated_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
   type TEXT NOT NULL, -- [public,private] for now all public?
   data TEXT NOT NULL, -- the key itself
-	hint TEXT DEFAULT '';
+	hint TEXT DEFAULT '',
   description TEXT DEFAULT '',
   created_by UUID REFERENCES organization_member (id),
   platform_id UUID REFERENCES platform (id)
@@ -498,38 +520,15 @@ EXECUTE PROCEDURE update_updated_at_column();
 -- +goose StatementEnd
 
 -------------------------------------------------------------------------
--- ORGANIZATION ---------------------------------------------------------
--- +goose StatementBegin
-CREATE TABLE organization (
-  id UUID PRIMARY KEY NOT NULL DEFAULT UUID_GENERATE_V4(),
-  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  deactivated_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
-  activated_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
-  name TEXT NOT NULL,
-  description TEXT DEFAULT ''
-);
--- +goose StatementEnd
-
--- +goose StatementBegin
-CREATE OR REPLACE TRIGGER update_organization_updated_at
-  BEFORE UPDATE
-  ON organization
-  FOR EACH ROW
-EXECUTE PROCEDURE update_updated_at_column();
--- +goose StatementEnd
-
--------------------------------------------------------------------------
--- GOOSE DOWN -----------------------------------------------------------
+--         ______                         ____                    
+--        / ____/___  ____  ________     / __ \____ _      ______ 
+--       / / __/ __ \/ __ \/ ___/ _ \   / / / / __ \ | /| / / __ \
+--      / /_/ / /_/ / /_/ (__  )  __/  / /_/ / /_/ / |/ |/ / / / /
+--      \____/\____/\____/____/\___/  /_____/\____/|__/|__/_/ /_/ 
+-------------------------------------------------------------------------                                                           
 
 -------------------------------------------------------------------------
 -- +goose Down
-
--------------------------------------------------------------------------
--- ORGANIZATION ---------------------------------------------------------
--- +goose StatementBegin
-DROP TABLE organization;
--- +goose StatementEnd
 
 -------------------------------------------------------------------------
 -- CONTRACT -------------------------------------------------------------
@@ -568,9 +567,9 @@ DROP TABLE IF EXISTS member_to_organization;
 -- +goose StatementEnd
 
 -------------------------------------------------------------------------
--- PLATFORM_MEMBER ------------------------------------------------------
+-- ORGANIZATION_MEMBER --------------------------------------------------
 -- +goose StatementBegin
-DROP TABLE IF EXISTS platform_member;
+DROP TABLE IF EXISTS organization_member;
 -- +goose StatementEnd
 
 -------------------------------------------------------------------------
@@ -651,6 +650,12 @@ DROP TABLE IF EXISTS network;
 -- PLATFORM -------------------------------------------------------------
 -- +goose StatementBegin
 DROP TABLE IF EXISTS platform;
+-- +goose StatementEnd
+
+-------------------------------------------------------------------------
+-- ORGANIZATION ---------------------------------------------------------
+-- +goose StatementBegin
+DROP TABLE organization;
 -- +goose StatementEnd
 
 -------------------------------------------------------------------------

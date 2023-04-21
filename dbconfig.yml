@@ -1,0 +1,5 @@
+# migrationsDir: ../migrations
+driver: postgres
+# import: $DB_DRIVER_IMPORT
+# dialect: $DB_DIALECT
+dsn: user=$DB_USER dbname=$DB_NAME sslmode=disable
