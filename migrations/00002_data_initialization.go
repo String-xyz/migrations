@@ -8,13 +8,13 @@ import (
 )
 
 func init() {
-	goose.AddMigration(upDataInitialization, downDataInitialization)
+	goose.AddMigration(Up00002, Down00002)
 }
 
-func upDataInitialization(tx *sql.Tx) error {
+func Up00002(tx *sql.Tx) error {
 	// Insert networks
 	_, err := tx.Exec(`
-		INSERT INTO networks (name, network_id, chain_id, gas_oracle, rpc_url, explorer_url) VALUES
+		INSERT INTO network (name, network_id, chain_id, gas_oracle, rpc_url, explorer_url) VALUES
 		('Polygon Mainnet', 137, 137, 'poly', 'https://rpc-mainnet.matic.quiknode.pro', 'https://polygonscan.com'),
 		('Mumbai Testnet', 80001, 80001, 'poly', 'https://matic-mumbai.chainstacklabs.com', 'https://mumbai.polygonscan.com'),
 		('Goerli Testnet', 5, 5, 'eth', 'https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161', 'https://goerli.etherscan.io'),
@@ -30,7 +30,7 @@ func upDataInitialization(tx *sql.Tx) error {
 
 	// Insert assets
 	_, err = tx.Exec(`
-		INSERT INTO assets (name, description, decimals, is_crypto, network_id, value_oracle, value_oracle2) VALUES
+		INSERT INTO asset (name, description, decimals, is_crypto, network_id, value_oracle, value_oracle2) VALUES
 		('AVAX', 'Avalanche', 18, true, 6, 'avalanche-2', 'avalanche'),
 		('ETH', 'Ethereum', 18, true, 4, 'ethereum', 'ethereum'),
 		('MATIC', 'Matic', 18, true, 1, 'matic-network', 'matic'),
@@ -43,7 +43,7 @@ func upDataInitialization(tx *sql.Tx) error {
 
 	// Update networks with gas_token_id
 	updateStmt := `
-		UPDATE networks
+		UPDATE network
 		SET gas_token_id = (SELECT id FROM assets WHERE name = $1)
 		WHERE name = $2;
 	`
@@ -67,7 +67,7 @@ func upDataInitialization(tx *sql.Tx) error {
 
 	// Insert String User
 	var stringUserId string
-	row := tx.QueryRow(`INSERT INTO users (type, status) VALUES ('internal', 'internal') RETURNING id;`)
+	row := tx.QueryRow(`INSERT INTO string-user (type, status) VALUES ('internal', 'internal') RETURNING id;`)
 	if err := row.Scan(&stringUserId); err != nil {
 		return err
 	}
@@ -85,7 +85,7 @@ func upDataInitialization(tx *sql.Tx) error {
 
 	// Insert Instrument Developer Card
 	var bankStringId string
-	row = tx.QueryRow(`INSERT INTO instruments (type, status, network, public_key, user_id) VALUES ('bank account', 'live', 'bankprov', '420481286', $1) RETURNING id;`, internalId)
+	row = tx.QueryRow(`INSERT INTO instrument (type, status, network, public_key, user_id) VALUES ('bank account', 'live', 'bankprov', '420481286', $1) RETURNING id;`, internalId)
 	if err := row.Scan(&bankStringId); err != nil {
 		return err
 	}
@@ -95,15 +95,19 @@ func upDataInitialization(tx *sql.Tx) error {
 		panic("STRING_BANK_ID is not set in ENV!")
 	}
 
-	_, err = tx.Exec(`UPDATE instruments SET id = $1 WHERE id = $2;`, bankId, bankStringId)
+	_, err = tx.Exec(`UPDATE instrument SET id = $1 WHERE id = $2;`, bankId, bankStringId)
 	if err != nil {
 		return err
 	}
 
+	walletAddress := os.Getenv("STRING_HOTWALLET_ADDRESS")
+	if walletAddress == "" {
+		panic("STRING_HOTWALLET_ADDRESS is not set in ENV!")
+	}
+
 	// Insert Instrument Developer Wallet
 	var walletStringId string
-	stringPublicAddress := "your_public_address_here" // Replace this with the actual public address
-	row = tx.QueryRow(`INSERT INTO instruments (type, status, network, public_key, user_id) VALUES ('crypto wallet', 'internal', 'EVM', $1, $2) RETURNING id;`, stringPublicAddress, internalId)
+	row = tx.QueryRow(`INSERT INTO instrument (type, status, network, public_key, user_id) VALUES ('crypto wallet', 'internal', 'EVM', $1, $2) RETURNING id;`, walletAddress, internalId)
 	if err := row.Scan(&walletStringId); err != nil {
 		return err
 	}
@@ -113,7 +117,7 @@ func upDataInitialization(tx *sql.Tx) error {
 		panic("STRING_WALLET_ID is not set in ENV!")
 	}
 
-	_, err = tx.Exec(`UPDATE instruments SET id = $1 WHERE id = $2;`, walletId, walletStringId)
+	_, err = tx.Exec(`UPDATE instrument SET id = $1 WHERE id = $2;`, walletId, walletStringId)
 	if err != nil {
 		return err
 	}
@@ -121,7 +125,7 @@ func upDataInitialization(tx *sql.Tx) error {
 	return nil
 }
 
-func downDataInitialization(tx *sql.Tx) error {
+func Down00002(tx *sql.Tx) error {
 	// This code is executed when the migration is rolled back.
 	return nil
 }
