@@ -10,11 +10,11 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 -------------------------------------------------------------------------
 -- +goose StatementBegin
 CREATE OR REPLACE FUNCTION update_updated_at_column()
-  RETURNS TRIGGER AS
+	RETURNS TRIGGER AS
 $$
 BEGIN
-  NEW.updated_at = now();
-  RETURN NEW;
+	NEW.updated_at = now();
+	RETURN NEW;
 END;
 $$ language 'plpgsql';
 -- +goose StatementEnd
@@ -24,24 +24,24 @@ $$ language 'plpgsql';
 -- STRING_USER ----------------------------------------------------------
 -- +goose StatementBegin
 CREATE TABLE string_user (
-  id UUID PRIMARY KEY NOT NULL DEFAULT UUID_GENERATE_V4(),
-  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  deleted_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
-  type TEXT NOT NULL, -- enum: to be defined at struct level in Go
-  status TEXT NOT NULL, -- enum: to be defined at struct level in Go
-  tags JSONB DEFAULT '{}'::JSONB, -- platforms should be listed in the tags
-  first_name TEXT DEFAULT '', -- name in separate table?
-  middle_name TEXT DEFAULT '',
-  last_name TEXT DEFAULT ''
+	id UUID PRIMARY KEY NOT NULL DEFAULT UUID_GENERATE_V4(),
+	created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	deactivated_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+	type TEXT NOT NULL, -- enum: to be defined at struct level in Go
+	status TEXT NOT NULL, -- enum: to be defined at struct level in Go
+	tags JSONB DEFAULT '{}'::JSONB, -- platforms should be listed in the tags
+	first_name TEXT DEFAULT '', -- name in separate table?
+	middle_name TEXT DEFAULT '',
+	last_name TEXT DEFAULT ''
 );
 -- +goose StatementEnd
 
 -- +goose StatementBegin
 CREATE OR REPLACE TRIGGER update_string_user_updated_at
-  BEFORE UPDATE
-  ON string_user
-  FOR EACH ROW
+	BEFORE UPDATE
+	ON string_user
+	FOR EACH ROW
 EXECUTE PROCEDURE update_updated_at_column();
 -- +goose StatementEnd
 
@@ -52,7 +52,7 @@ CREATE TABLE organization (
   id UUID PRIMARY KEY NOT NULL DEFAULT UUID_GENERATE_V4(),
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  deleted_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+  deactivated_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
   activated_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
   name TEXT NOT NULL,
   description TEXT DEFAULT ''
@@ -71,24 +71,23 @@ EXECUTE PROCEDURE update_updated_at_column();
 -- PLATFORM -------------------------------------------------------------
 -- +goose StatementBegin
 CREATE TABLE platform (
-  id UUID PRIMARY KEY NOT NULL DEFAULT UUID_GENERATE_V4(),
-  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  deleted_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
-  deactivated_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
-  name TEXT NOT NULL DEFAULT '',
-  description TEXT DEFAULT '',
-  domains TEXT[] DEFAULT '{}'::TEXT[], -- define which domains can make calls to API (web-to-API)
-  ip_addresses TEXT[] DEFAULT '{}'::TEXT[],
-  organization_id UUID NOT NULL REFERENCES organization (id)
+	id UUID PRIMARY KEY NOT NULL DEFAULT UUID_GENERATE_V4(),
+	created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	deactivated_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+	name TEXT NOT NULL DEFAULT '',
+	description TEXT DEFAULT '',
+	domains TEXT[] DEFAULT '{}'::TEXT[], -- define which domains can make calls to API (web-to-API)
+	ip_addresses TEXT[] DEFAULT '{}'::TEXT[],
+	organization_id UUID NOT NULL REFERENCES organization (id)
 );
 -- +goose StatementEnd
 
 -- +goose StatementBegin
 CREATE OR REPLACE TRIGGER update_platform_updated_at
-  BEFORE UPDATE
-  ON platform
-  FOR EACH ROW
+	BEFORE UPDATE
+	ON platform
+	FOR EACH ROW
 EXECUTE PROCEDURE update_updated_at_column();
 -- +goose StatementEnd
 
@@ -96,25 +95,25 @@ EXECUTE PROCEDURE update_updated_at_column();
 -- NETWORK --------------------------------------------------------------
 -- +goose StatementBegin
 CREATE TABLE network (
-  id UUID PRIMARY KEY NOT NULL DEFAULT UUID_GENERATE_V4(),
-  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  deleted_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
-  name TEXT NOT NULL,
-  network_id TEXT DEFAULT '', -- might actually be big.Int
-  chain_id TEXT NOT NULL, -- might actually be big.Int
-  gas_token_id TEXT DEFAULT '', -- INDEX CREATED BELOW
-  gas_oracle TEXT DEFAULT '', -- the name of the network in oracle (i.e. in owlracle)
-  rpc_url TEXT DEFAULT '', -- The RPC used to access the network (ie "https://mainnet.infura.io/v3")
-  explorer_url TEXT DEFAULT '' -- The Block Explorer URL used to view transactions and entities in the browser
+	id UUID PRIMARY KEY NOT NULL DEFAULT UUID_GENERATE_V4(),
+	created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	deactivated_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+	name TEXT NOT NULL,
+	network_id TEXT DEFAULT '', -- might actually be big.Int
+	chain_id TEXT NOT NULL, -- might actually be big.Int
+	gas_token_id TEXT DEFAULT '', -- INDEX CREATED BELOW
+	gas_oracle TEXT DEFAULT '', -- the name of the network in oracle (i.e. in owlracle)
+	rpc_url TEXT DEFAULT '', -- The RPC used to access the network (ie "https://mainnet.infura.io/v3")
+	explorer_url TEXT DEFAULT '' -- The Block Explorer URL used to view transactions and entities in the browser
 );
 -- +goose StatementEnd
 
 -- +goose StatementBegin
 CREATE OR REPLACE TRIGGER update_network_updated_at
-  BEFORE UPDATE
-  ON network
-  FOR EACH ROW
+	BEFORE UPDATE
+	ON network
+	FOR EACH ROW
 EXECUTE PROCEDURE update_updated_at_column();
 -- +goose StatementEnd
 
@@ -122,25 +121,25 @@ EXECUTE PROCEDURE update_updated_at_column();
 -- ASSET ----------------------------------------------------------------
 -- +goose StatementBegin
 CREATE TABLE asset ( -- We will write sql commands to add/update these in bulk.
-  id UUID PRIMARY KEY NOT NULL DEFAULT UUID_GENERATE_V4(),
-  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  deleted_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
-  name TEXT NOT NULL,
-  description TEXT DEFAULT '',
-  decimals INT DEFAULT 0,
-  is_crypto BOOLEAN NOT NULL,
-  network_id UUID REFERENCES network (id) DEFAULT NULL,
-  value_oracle TEXT DEFAULT '', -- the name of the asset in oracle (i.e. in coingecko).  
-  value_oracle_2 TEXT DEFAULT ''
+	id UUID PRIMARY KEY NOT NULL DEFAULT UUID_GENERATE_V4(),
+	created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	deactivated_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+	name TEXT NOT NULL,
+	description TEXT DEFAULT '',
+	decimals INT DEFAULT 0,
+	is_crypto BOOLEAN NOT NULL,
+	network_id UUID REFERENCES network (id) DEFAULT NULL,
+	value_oracle TEXT DEFAULT '', -- the name of the asset in oracle (i.e. in coingecko).  
+	value_oracle_2 TEXT DEFAULT ''
 );
 -- +goose StatementEnd
 
 -- +goose StatementBegin
 CREATE OR REPLACE TRIGGER update_asset_updated_at
-  BEFORE UPDATE
-  ON asset
-  FOR EACH ROW
+	BEFORE UPDATE
+	ON asset
+	FOR EACH ROW
 EXECUTE PROCEDURE update_updated_at_column();
 -- +goose StatementEnd
 
@@ -168,9 +167,9 @@ CREATE TABLE device (
   id UUID PRIMARY KEY NOT NULL DEFAULT UUID_GENERATE_V4(),
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  deleted_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
   last_used_at TIMESTAMP WITH TIME ZONE NOT NULL,
   validated_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+  deactivated_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
   type TEXT DEFAULT '', -- enum: to be defined at struct level in Go
   description TEXT DEFAULT '',
   fingerprint TEXT DEFAULT '',
@@ -198,8 +197,8 @@ CREATE TABLE contact (
   id UUID PRIMARY KEY NOT NULL DEFAULT UUID_GENERATE_V4(),
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  deleted_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
   last_authenticated_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+  deactivated_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
   validated_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
   type TEXT NOT NULL, -- enum: [phone, email, etc...] to be defined at struct level in Go
   status TEXT DEFAULT '', -- enum: [primary, inactive] to be defined at struct level in Go
@@ -223,7 +222,7 @@ CREATE TABLE location (
   id UUID PRIMARY KEY NOT NULL DEFAULT UUID_GENERATE_V4(),
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  deleted_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+  deactivated_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
   type TEXT DEFAULT '',
   status TEXT NOT NULL, -- enum: 
   tags JSONB DEFAULT '{}'::JSONB,
@@ -252,10 +251,10 @@ CREATE TABLE instrument (
   id UUID PRIMARY KEY NOT NULL DEFAULT UUID_GENERATE_V4(),
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  deleted_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+  deactivated_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
   type TEXT NOT NULL, -- enum:  includes crypto wallet
   status TEXT NOT NULL, -- enum: 
-  name TEXT NOT NULL DEFAULT '',
+	name TEXT NOT NULL DEFAULT '',
   tags JSONB DEFAULT '{}'::JSONB,
   network TEXT NOT NULL, -- enum: 
   public_key TEXT DEFAULT '',
@@ -306,7 +305,7 @@ CREATE TABLE tx_leg (
   id UUID PRIMARY KEY NOT NULL DEFAULT UUID_GENERATE_V4(), -- unique identifier for the TX leg which we generate
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP, -- initial timestamp of creation
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP, -- timestamp whenever this tx_leg is updated
-  deleted_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+  deactivated_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
   -- TIMESTAMP:
   -- For CC send = auth timestamp
   -- For CC receive = capture timestamp
@@ -346,7 +345,7 @@ CREATE TABLE transaction (
   id UUID PRIMARY KEY NOT NULL DEFAULT UUID_GENERATE_V4(), -- unique idenfier for the transaction which we generate
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP, -- time transaction entry was initially created
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP, -- time transaction entry was last updated, including adding tags
-  deleted_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+  deactivated_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
   type TEXT DEFAULT '', -- enum [fiat-to-crypto, crypto-to-fiat] (these types may eventually have subtypes, ie NFT_MINT)
   status TEXT DEFAULT '', --enum State of the transaction in the /transact endpoint
   tags JSONB DEFAULT '{}'::JSONB, -- Empty but will be used for Unit21.  These are key-val pairs for flagging transactions
@@ -384,7 +383,6 @@ CREATE TABLE organization_member (
   id UUID PRIMARY KEY NOT NULL DEFAULT UUID_GENERATE_V4(),
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  deleted_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
   deactivated_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
   email TEXT NOT NULL,
   password TEXT DEFAULT '', -- how do we maintain this?
@@ -420,7 +418,7 @@ CREATE TABLE member_role (
   id UUID PRIMARY KEY NOT NULL DEFAULT UUID_GENERATE_V4(),
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  deleted_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+  deactivated_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
   name TEXT NOT NULL
 );
 -- +goose StatementEnd
@@ -453,7 +451,7 @@ CREATE TABLE member_invite (
   id UUID PRIMARY KEY NOT NULL DEFAULT UUID_GENERATE_V4(),
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  deleted_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+  deactivated_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
   expired_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
   accepted_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
   email TEXT NOT NULL,
@@ -479,10 +477,10 @@ CREATE TABLE apikey (
   id UUID PRIMARY KEY NOT NULL DEFAULT UUID_GENERATE_V4(),
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  deleted_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+  deactivated_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
   type TEXT NOT NULL, -- [public,private] for now all public?
   data TEXT NOT NULL, -- the key itself
-  hint TEXT DEFAULT '',
+	hint TEXT DEFAULT '',
   description TEXT DEFAULT '',
   created_by UUID REFERENCES organization_member (id),
   platform_id UUID REFERENCES platform (id)
@@ -504,7 +502,6 @@ CREATE TABLE contract (
   id UUID PRIMARY KEY NOT NULL DEFAULT UUID_GENERATE_V4(),
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  deleted_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
   deactivated_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
   name TEXT DEFAULT '',
   address TEXT NOT NULL,
