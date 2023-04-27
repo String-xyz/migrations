@@ -30,7 +30,7 @@ func Up00002(tx *sql.Tx) error {
 
 	// Insert assets
 	_, err = tx.Exec(`
-		INSERT INTO asset (name, description, decimals, is_crypto, network_id, value_oracle, value_oracle2) VALUES
+		INSERT INTO asset (name, description, decimals, is_crypto, network_id, value_oracle, value_oracle_2) VALUES
 		('AVAX', 'Avalanche', 18, true, 6, 'avalanche-2', 'avalanche'),
 		('ETH', 'Ethereum', 18, true, 4, 'ethereum', 'ethereum'),
 		('MATIC', 'Matic', 18, true, 1, 'matic-network', 'matic'),
