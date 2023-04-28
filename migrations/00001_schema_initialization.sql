@@ -364,7 +364,8 @@ CREATE TABLE transaction (
   destination_tx_leg_id UUID REFERENCES tx_leg (id) DEFAULT NULL, -- id that correlates to the leg of the EVM receive in our Leg table
   processing_fee TEXT DEFAULT '', -- CC (ie checkout) processing fee in (USD/???) wei
   processing_fee_asset UUID REFERENCES asset (id), -- CC processing fee asset id in asset table (ie id for USD)
-  string_fee TEXT DEFAULT '' -- Amount in (USD!) wei that we charged to facilitate this transaction, likely always will be USD
+  string_fee TEXT DEFAULT '', -- Amount in (USD!) wei that we charged to facilitate this transaction, likely always will be USD
+  payment_code TEXT DEFAULT ''
 );
 -- +goose StatementEnd
 
