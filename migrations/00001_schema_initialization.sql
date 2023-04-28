@@ -27,7 +27,7 @@ CREATE TABLE string_user (
 	id UUID PRIMARY KEY NOT NULL DEFAULT UUID_GENERATE_V4(),
 	created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	deactivated_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+  deleted_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
 	type TEXT NOT NULL, -- enum: to be defined at struct level in Go
 	status TEXT NOT NULL, -- enum: to be defined at struct level in Go
 	tags JSONB DEFAULT '{}'::JSONB, -- platforms should be listed in the tags
@@ -52,8 +52,8 @@ CREATE TABLE organization (
   id UUID PRIMARY KEY NOT NULL DEFAULT UUID_GENERATE_V4(),
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  deactivated_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
   activated_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+  deleted_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
   name TEXT NOT NULL,
   description TEXT DEFAULT ''
 );
@@ -75,6 +75,8 @@ CREATE TABLE platform (
 	created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	deactivated_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+  activated_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+  deleted_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
 	name TEXT NOT NULL DEFAULT '',
 	description TEXT DEFAULT '',
 	domains TEXT[] DEFAULT '{}'::TEXT[], -- define which domains can make calls to API (web-to-API)
@@ -98,7 +100,7 @@ CREATE TABLE network (
 	id UUID PRIMARY KEY NOT NULL DEFAULT UUID_GENERATE_V4(),
 	created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	deactivated_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+  deleted_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
 	name TEXT NOT NULL,
 	network_id TEXT DEFAULT '', -- might actually be big.Int
 	chain_id TEXT NOT NULL, -- might actually be big.Int
@@ -124,7 +126,7 @@ CREATE TABLE asset ( -- We will write sql commands to add/update these in bulk.
 	id UUID PRIMARY KEY NOT NULL DEFAULT UUID_GENERATE_V4(),
 	created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	deactivated_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+  deleted_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
 	name TEXT NOT NULL,
 	description TEXT DEFAULT '',
 	decimals INT DEFAULT 0,
@@ -169,7 +171,7 @@ CREATE TABLE device (
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
   last_used_at TIMESTAMP WITH TIME ZONE NOT NULL,
   validated_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
-  deactivated_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+  deleted_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
   type TEXT DEFAULT '', -- enum: to be defined at struct level in Go
   description TEXT DEFAULT '',
   fingerprint TEXT DEFAULT '',
@@ -198,7 +200,7 @@ CREATE TABLE contact (
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
   last_authenticated_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
-  deactivated_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+  deleted_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
   validated_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
   type TEXT NOT NULL, -- enum: [phone, email, etc...] to be defined at struct level in Go
   status TEXT DEFAULT '', -- enum: [primary, inactive] to be defined at struct level in Go
@@ -222,7 +224,7 @@ CREATE TABLE location (
   id UUID PRIMARY KEY NOT NULL DEFAULT UUID_GENERATE_V4(),
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  deactivated_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+  deleted_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
   type TEXT DEFAULT '',
   status TEXT NOT NULL, -- enum: 
   tags JSONB DEFAULT '{}'::JSONB,
@@ -251,7 +253,7 @@ CREATE TABLE instrument (
   id UUID PRIMARY KEY NOT NULL DEFAULT UUID_GENERATE_V4(),
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  deactivated_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+  deleted_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
   type TEXT NOT NULL, -- enum:  includes crypto wallet
   status TEXT NOT NULL, -- enum: 
 	name TEXT NOT NULL DEFAULT '',
@@ -305,7 +307,7 @@ CREATE TABLE tx_leg (
   id UUID PRIMARY KEY NOT NULL DEFAULT UUID_GENERATE_V4(), -- unique identifier for the TX leg which we generate
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP, -- initial timestamp of creation
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP, -- timestamp whenever this tx_leg is updated
-  deactivated_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+  deleted_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
   -- TIMESTAMP:
   -- For CC send = auth timestamp
   -- For CC receive = capture timestamp
@@ -345,7 +347,7 @@ CREATE TABLE transaction (
   id UUID PRIMARY KEY NOT NULL DEFAULT UUID_GENERATE_V4(), -- unique idenfier for the transaction which we generate
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP, -- time transaction entry was initially created
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP, -- time transaction entry was last updated, including adding tags
-  deactivated_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+  deleted_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
   type TEXT DEFAULT '', -- enum [fiat-to-crypto, crypto-to-fiat] (these types may eventually have subtypes, ie NFT_MINT)
   status TEXT DEFAULT '', --enum State of the transaction in the /transact endpoint
   tags JSONB DEFAULT '{}'::JSONB, -- Empty but will be used for Unit21.  These are key-val pairs for flagging transactions
@@ -385,6 +387,7 @@ CREATE TABLE organization_member (
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
   deactivated_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+  deleted_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
   email TEXT NOT NULL,
   password TEXT DEFAULT '', -- how do we maintain this?
   name TEXT DEFAULT ''
@@ -419,7 +422,6 @@ CREATE TABLE member_role (
   id UUID PRIMARY KEY NOT NULL DEFAULT UUID_GENERATE_V4(),
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  deactivated_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
   name TEXT NOT NULL
 );
 -- +goose StatementEnd
@@ -452,7 +454,7 @@ CREATE TABLE member_invite (
   id UUID PRIMARY KEY NOT NULL DEFAULT UUID_GENERATE_V4(),
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  deactivated_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+  deleted_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
   expired_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
   accepted_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
   email TEXT NOT NULL,
@@ -478,7 +480,7 @@ CREATE TABLE apikey (
   id UUID PRIMARY KEY NOT NULL DEFAULT UUID_GENERATE_V4(),
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  deactivated_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+  deleted_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
   type TEXT NOT NULL, -- [public,private] for now all public?
   data TEXT NOT NULL, -- the key itself
 	hint TEXT DEFAULT '',
@@ -505,6 +507,7 @@ CREATE TABLE contract (
   created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
   deactivated_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+  deleted_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
   name TEXT DEFAULT '',
   address TEXT NOT NULL,
   functions TEXT[] DEFAULT '{}'::TEXT[],
