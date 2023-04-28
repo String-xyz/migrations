@@ -173,7 +173,7 @@ CREATE TABLE device (
   type TEXT DEFAULT '', -- enum: to be defined at struct level in Go
   description TEXT DEFAULT '',
   fingerprint TEXT DEFAULT '',
-  ip_addresses TEXT[] DEFAULT NULL,
+  ip_addresses TEXT[] DEFAULT '{}'::TEXT[],
   user_id UUID NOT NULL REFERENCES string_user (id)
 );
 -- +goose StatementEnd
@@ -259,7 +259,7 @@ CREATE TABLE instrument (
   network TEXT NOT NULL, -- enum: 
   public_key TEXT DEFAULT '',
   last_4 TEXT DEFAULT '',
-  user_id UUID REFERENCES string_user (id), -- instrument can be null in the circumstance that a user sends an asset to an unknown wallet
+  user_id UUID REFERENCES string_user (id) DEFAULT NULL, -- instrument can be null in the circumstance that a user sends an asset to an unknown wallet
   location_id UUID REFERENCES location (id) DEFAULT NULL
 );
 -- +goose StatementEnd
@@ -364,7 +364,8 @@ CREATE TABLE transaction (
   destination_tx_leg_id UUID REFERENCES tx_leg (id) DEFAULT NULL, -- id that correlates to the leg of the EVM receive in our Leg table
   processing_fee TEXT DEFAULT '', -- CC (ie checkout) processing fee in (USD/???) wei
   processing_fee_asset UUID REFERENCES asset (id), -- CC processing fee asset id in asset table (ie id for USD)
-  string_fee TEXT DEFAULT '' -- Amount in (USD!) wei that we charged to facilitate this transaction, likely always will be USD
+  string_fee TEXT DEFAULT '', -- Amount in (USD!) wei that we charged to facilitate this transaction, likely always will be USD
+  payment_code TEXT DEFAULT ''
 );
 -- +goose StatementEnd
 
@@ -458,7 +459,7 @@ CREATE TABLE member_invite (
   name TEXT DEFAULT '',
   invited_by UUID REFERENCES organization_member (id) DEFAULT NULL,
   organization_id UUID NOT NULL REFERENCES organization (id),
-  role_id UUID REFERENCES member_role (id)
+  role_id UUID NOT NULL REFERENCES member_role (id)
 );
 -- +goose StatementEnd
 
@@ -482,8 +483,9 @@ CREATE TABLE apikey (
   data TEXT NOT NULL, -- the key itself
 	hint TEXT DEFAULT '',
   description TEXT DEFAULT '',
-  created_by UUID REFERENCES organization_member (id),
-  platform_id UUID REFERENCES platform (id)
+  created_by UUID NOT NULL REFERENCES organization_member (id),
+  platform_id UUID REFERENCES platform (id),
+  organization_id UUID NOT NULL REFERENCES organization (id)
 );
 -- +goose StatementEnd
 

@@ -4,19 +4,13 @@ RUN apt update && apt upgrade -y && \
 	apt install -y git \
 	make openssh-client
 
-# all the code lives here. We gonna mount the volume here
-WORKDIR .
+# All the code lives here. We will mount the volume here
+WORKDIR /migrations
 
-# install goose for db migrations
-RUN go install github.com/pressly/goose/v3/cmd/goose@latest
-RUN go install github.com/joho/godotenv
-RUN go install github.com/lib/pq
+COPY . .
 
-# will run from an entrypoint.sh file
-ADD migrations/ migrations/
-ADD cmd/ cmd/
-COPY entrypoint.sh /entrypoint.sh
-ADD .env .env
-RUN chmod +x /entrypoint.sh
+RUN go mod download
 
-CMD ["/entrypoint.sh"]
+RUN chmod +x /migrations/entrypoint.sh
+
+CMD ["/migrations/entrypoint.sh"]
