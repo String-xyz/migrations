@@ -4,20 +4,13 @@ RUN apt update && apt upgrade -y && \
 	apt install -y git \
 	make openssh-client
 
-# all the code lives here. We gonna mount the volume here
+# All the code lives here. We will mount the volume here
 WORKDIR /migrations
 
-
-# will run from an entrypoint.sh file
-ADD migrations/ migrations/
-ADD cmd/ cmd/
-COPY entrypoint.sh /entrypoint.sh
-ADD .env .env
-ADD go.mod go.mod
-ADD go.sum go.sum
+COPY . .
 
 RUN go mod download
 
-RUN chmod +x /entrypoint.sh
+RUN chmod +x /migrations/entrypoint.sh
 
-CMD ["/entrypoint.sh"]
+CMD ["/migrations/entrypoint.sh"]

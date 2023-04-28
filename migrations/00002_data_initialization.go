@@ -3,8 +3,8 @@ package migrations
 import (
 	"database/sql"
 	"fmt"
-	"os"
 
+	"github.com/String-xyz/migrations/config"
 	"github.com/google/uuid"
 	"github.com/pressly/goose/v3"
 )
@@ -14,6 +14,12 @@ func init() {
 }
 
 func Up00002(tx *sql.Tx) error {
+	// Load environment variables
+	err := config.LoadEnv()
+	if err != nil {
+		return err
+	}
+
 	// Insert networks
 	query := `
 		INSERT INTO network (name, network_id, chain_id, gas_oracle, rpc_url, explorer_url) VALUES
@@ -93,10 +99,7 @@ func Up00002(tx *sql.Tx) error {
 	}
 
 	// Set String User ID to what's defined in the ENV
-	internalId := os.Getenv("STRING_INTERNAL_ID")
-	if internalId == "" {
-		panic("STRING_INTERNAL_ID is not set in ENV!")
-	}
+	internalId := config.Var.STRING_INTERNAL_ID
 
 	_, err = tx.Exec(`UPDATE string_user SET id = $1 WHERE id = $2;`, internalId, stringUserId)
 	if err != nil {
@@ -110,20 +113,14 @@ func Up00002(tx *sql.Tx) error {
 		return err
 	}
 
-	bankId := os.Getenv("STRING_BANK_ID")
-	if bankId == "" {
-		panic("STRING_BANK_ID is not set in ENV!")
-	}
+	bankId := config.Var.STRING_BANK_ID
 
 	_, err = tx.Exec(`UPDATE instrument SET id = $1 WHERE id = $2;`, bankId, bankStringId)
 	if err != nil {
 		return err
 	}
 
-	walletAddress := os.Getenv("STRING_HOTWALLET_ADDRESS")
-	if walletAddress == "" {
-		panic("STRING_HOTWALLET_ADDRESS is not set in ENV!")
-	}
+	walletAddress := config.Var.STRING_HOTWALLET_ADDRESS
 
 	// Insert Instrument Developer Wallet
 	var walletStringId string
@@ -132,14 +129,34 @@ func Up00002(tx *sql.Tx) error {
 		return err
 	}
 
-	walletId := os.Getenv("STRING_WALLET_ID")
-	if walletId == "" {
-		panic("STRING_WALLET_ID is not set in ENV!")
-	}
+	walletId := config.Var.STRING_WALLET_ID
 
 	_, err = tx.Exec(`UPDATE instrument SET id = $1 WHERE id = $2;`, walletId, walletStringId)
 	if err != nil {
 		return err
+	}
+
+	// Get environment variables
+	memberId := config.Var.MEMBER_ROLE_MEMBER_ID
+	adminId := config.Var.MEMBER_ROLE_ADMIN_ID
+	ownerId := config.Var.MEMBER_ROLE_OWNER_ID
+
+	// Insert "Member" role
+	_, err = tx.Exec(`INSERT INTO member_role (id, name) VALUES ($1, $2);`, memberId, "Member")
+	if err != nil {
+		panic(err)
+	}
+
+	// Insert "Admin" role
+	_, err = tx.Exec(`INSERT INTO member_role (id, name) VALUES ($1, $2);`, adminId, "Admin")
+	if err != nil {
+		panic(err)
+	}
+
+	// Insert "Owner" role
+	_, err = tx.Exec(`INSERT INTO member_role (id, name) VALUES ($1, $2);`, ownerId, "Owner")
+	if err != nil {
+		panic(err)
 	}
 
 	return nil

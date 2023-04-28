@@ -6,8 +6,8 @@ import (
 	"log"
 	"os"
 
+	"github.com/String-xyz/migrations/config"
 	_ "github.com/String-xyz/migrations/migrations"
-	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 	"github.com/pressly/goose/v3"
 )
@@ -28,15 +28,16 @@ func main() {
 
 	command := args[0]
 
-	err := godotenv.Load()
+	// Load environment variables
+	err := config.LoadEnv()
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		return
 	}
 
-	dbUsername := os.Getenv("DB_USERNAME")
-	dbPassword := os.Getenv("DB_PASSWORD")
-	dbName := os.Getenv("DB_NAME")
-	dbHost := os.Getenv("DB_HOST")
+	dbUsername := config.Var.DB_USERNAME
+	dbPassword := config.Var.DB_PASSWORD
+	dbName := config.Var.DB_NAME
+	dbHost := config.Var.DB_HOST
 
 	connectionString := fmt.Sprintf("postgres://%s:%s@%s:5432/%s?sslmode=disable", dbUsername, dbPassword, dbHost, dbName)
 

@@ -1,9 +1,7 @@
 #!/bin/sh
 
 # export env variables from .env file
-export $(grep -v '^#' .env | xargs)
-echo $(pwd)
-echo $(ls -a)
+# export $(grep -v '^#' .env | xargs)
 
 # run db migrations
 echo "----- Building migrations..."
