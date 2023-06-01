@@ -25,6 +25,7 @@ $$ language 'plpgsql';
 -- +goose StatementBegin
 CREATE TABLE string_user (
 	id UUID PRIMARY KEY NOT NULL DEFAULT UUID_GENERATE_V4(),
+	checkout_id TEXT DEFAULT '', -- the id of the user in checkout (customer_id) 
 	created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	deleted_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
