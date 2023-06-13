@@ -6,6 +6,8 @@ import (
 	"log"
 	"os"
 
+	env "github.com/String-xyz/go-lib/v2/config"
+
 	"github.com/String-xyz/migrations/config"
 	_ "github.com/String-xyz/migrations/migrations"
 	_ "github.com/lib/pq"
@@ -29,7 +31,7 @@ func main() {
 	command := args[0]
 
 	// Load environment variables
-	err := config.LoadEnv()
+	err := env.LoadEnv(&config.Var)
 	if err != nil {
 		return
 	}
