@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 
+	env "github.com/String-xyz/go-lib/v2/config"
+
 	"github.com/String-xyz/migrations/config"
 	"github.com/google/uuid"
 	"github.com/pressly/goose/v3"
@@ -15,7 +17,7 @@ func init() {
 
 func Up00002(tx *sql.Tx) error {
 	// Load environment variables
-	err := config.LoadEnv()
+	err := env.LoadEnv(&config.Var)
 	if err != nil {
 		return err
 	}
