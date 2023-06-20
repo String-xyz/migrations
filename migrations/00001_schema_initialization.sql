@@ -511,6 +511,7 @@ CREATE TABLE contract (
 	address TEXT NOT NULL,
 	functions TEXT[] DEFAULT '{}'::TEXT[],
 	network_id UUID NOT NULL REFERENCES network (id),
+	organization_id UUID NOT NULL REFERENCES organization (id)
 );
 -- +goose StatementEnd
 
