@@ -511,7 +511,6 @@ CREATE TABLE contract (
 	address TEXT NOT NULL,
 	functions TEXT[] DEFAULT '{}'::TEXT[],
 	network_id UUID NOT NULL REFERENCES network (id),
-	platform_id UUID NOT NULL REFERENCES platform (id)
 );
 -- +goose StatementEnd
 
@@ -524,6 +523,15 @@ EXECUTE PROCEDURE update_updated_at_column();
 -- +goose StatementEnd
 
 -------------------------------------------------------------------------
+-- CONTRACT_TO_PLATFORM -------------------------------------------------
+-- +goose StatementBegin
+CREATE TABLE contract_to_platform (
+	contract_id UUID REFERENCES contract (id),
+	platform_id UUID REFERENCES platform (id)
+);
+-- +goose StatementEnd
+
+-------------------------------------------------------------------------
 --         ______                         ____                    
 --        / ____/___  ____  ________     / __ \____ _      ______ 
 --       / / __/ __ \/ __ \/ ___/ _ \   / / / / __ \ | /| / / __ \
@@ -533,6 +541,12 @@ EXECUTE PROCEDURE update_updated_at_column();
 
 -------------------------------------------------------------------------
 -- +goose Down
+
+-------------------------------------------------------------------------
+-- CONTRACT_TO_PLATFORM -------------------------------------------------------------
+-- +goose StatementBegin
+DROP TABLE IF EXISTS contract_to_platform;
+-- +goose StatementEnd
 
 -------------------------------------------------------------------------
 -- CONTRACT -------------------------------------------------------------
