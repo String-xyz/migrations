@@ -513,6 +513,8 @@ CREATE TABLE contract (
 	network_id UUID NOT NULL REFERENCES network (id),
 	organization_id UUID NOT NULL REFERENCES organization (id)
 );
+-- Lets add a unique constraint so we can't have duplicates in the same network and organization
+CREATE UNIQUE INDEX contract_address_network_id_org_id_idx ON contract(address,organization_id,network_id);
 -- +goose StatementEnd
 
 -- +goose StatementBegin
@@ -530,6 +532,8 @@ CREATE TABLE contract_to_platform (
 	contract_id UUID REFERENCES contract (id),
 	platform_id UUID REFERENCES platform (id)
 );
+
+CREATE UNIQUE INDEX contract_to_platform_contract_id_platform_id_idx ON contract_to_platform(contract_id, platform_id);
 -- +goose StatementEnd
 
 -------------------------------------------------------------------------
