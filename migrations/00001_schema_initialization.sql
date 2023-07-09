@@ -508,10 +508,10 @@ CREATE TABLE contract (
 	deactivated_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
 	deleted_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
 	name TEXT DEFAULT '',
-	address TEXT NOT NULL,
-	functions TEXT[] DEFAULT '{}'::TEXT[],
-	network_id UUID NOT NULL REFERENCES network (id),
-  platform_id UUID NOT NULL REFERENCES platform (id)
+   address TEXT NOT NULL,
+   functions TEXT[] DEFAULT '{}'::TEXT[],
+   network_id UUID NOT NULL REFERENCES network (id),
+   platform_id UUID NOT NULL REFERENCES platform (id)
 );
 
 -- +goose StatementEnd
@@ -534,12 +534,6 @@ EXECUTE PROCEDURE update_updated_at_column();
 
 -------------------------------------------------------------------------
 -- +goose Down
-
--------------------------------------------------------------------------
--- CONTRACT_TO_PLATFORM -------------------------------------------------------------
--- +goose StatementBegin
-DROP TABLE IF EXISTS contract_to_platform;
--- +goose StatementEnd
 
 -------------------------------------------------------------------------
 -- CONTRACT -------------------------------------------------------------
