@@ -26,6 +26,7 @@ CREATE UNIQUE INDEX contract_address_network_id_org_id_idx ON contract(address,o
 -- +goose Down
 -- +goose StatementBegin
 DROP TABLE IF EXISTS contract_to_platform;
+DROP INDEX IF EXISTS contract_address_network_id_org_id_idx
 ALTER TABLE contract DROP COLUMN organization_id;
 ALTER TABLE contract ADD COLUMN platform_id UUID REFERENCES platform (id);
 -- +goose StatementEnd
