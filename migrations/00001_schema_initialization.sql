@@ -507,11 +507,11 @@ CREATE TABLE contract (
 	updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	deactivated_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
 	deleted_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
-   name TEXT DEFAULT '',
-   address TEXT NOT NULL,
-   functions TEXT[] DEFAULT '{}'::TEXT[],
-   network_id UUID NOT NULL REFERENCES network (id),
-   platform_id UUID NOT NULL REFERENCES platform (id)
+	name TEXT DEFAULT '',
+	address TEXT NOT NULL,
+	functions TEXT[] DEFAULT '{}'::TEXT[],
+	network_id UUID NOT NULL REFERENCES network (id),
+	platform_id UUID NOT NULL REFERENCES platform (id)
 );
 
 -- +goose StatementEnd
