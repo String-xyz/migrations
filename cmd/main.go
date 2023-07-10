@@ -40,8 +40,10 @@ func main() {
 	dbPassword := config.Var.DB_PASSWORD
 	dbName := config.Var.DB_NAME
 	dbHost := config.Var.DB_HOST
+	sslMode := config.Var.SSL_MODE
+	dbPort := config.Var.DB_PORT
 
-	connectionString := fmt.Sprintf("postgres://%s:%s@%s:5432/%s?sslmode=disable", dbUsername, dbPassword, dbHost, dbName)
+	connectionString := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=%s", dbUsername, dbPassword, dbHost, dbPort, dbName, sslMode)
 
 	db, err := goose.OpenDBWithDriver("postgres", connectionString)
 	if err != nil {
