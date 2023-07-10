@@ -513,6 +513,7 @@ CREATE TABLE contract (
 	network_id UUID NOT NULL REFERENCES network (id),
 	platform_id UUID NOT NULL REFERENCES platform (id)
 );
+
 -- +goose StatementEnd
 
 -- +goose StatementBegin

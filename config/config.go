@@ -13,6 +13,7 @@ type vars struct {
 	MEMBER_ROLE_MEMBER_ID    string `required:"true"`
 	MEMBER_ROLE_ADMIN_ID     string `required:"true"`
 	MEMBER_ROLE_OWNER_ID     string `required:"true"`
+	SSL_MODE                 string `required:"true"`
 }
 
 var Var vars
