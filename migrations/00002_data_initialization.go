@@ -75,7 +75,7 @@ func Up00002(tx *sql.Tx) error {
 		SET gas_token_id = (SELECT id FROM asset WHERE name = $1)
 		WHERE name = $2;
 	`
-	updates := [10][2]string{
+	updates := [8][2]string{
 		{"MATIC", "Polygon Mainnet"},
 		{"MATIC", "Mumbai Testnet"},
 		{"ETH", "Goerli Testnet"},
