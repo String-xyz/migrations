@@ -32,9 +32,7 @@ func Up00002(tx *sql.Tx) error {
 			('Fuji Testnet', 1, 43113, 'avax', 'https://api.avax-test.network/ext/bc/C/rpc', 'https://testnet.snowtrace.io'),
 			('Avalanche Mainnet', 1, 43114, 'avax', 'https://api.avax.network/ext/bc/C/rpc', 'https://snowtrace.io'),
 			('Nitro Goerli Rollup Testnet', 421613, 421613, 'arb', 'https://goerli-rollup.arbitrum.io/rpc', 'https://goerli.arbiscan.io'),
-			('Arbitrum Nova Mainnet', 42170, 42170, 'arb', 'https://nova.arbitrum.io/rpc', 'https://nova-explorer.arbitrum.io'),
-			('DFK Subnet', 1, 53935, 'avax', 'https://dfkchain.api.onfinality.io/public', 'https://subnets.avax.network/defi-kingdoms'),
-			('DFK Testnet', 1, 335, 'avax', 'https://subnets.avax.network/defi-kingdoms/dfk-chain-testnet/rpc', 'https://subnets-test.avax.network/defi-kingdoms')
+			('Arbitrum Nova Mainnet', 42170, 42170, 'arb', 'https://nova.arbitrum.io/rpc', 'https://nova-explorer.arbitrum.io')
 		RETURNING id;
 		`
 
@@ -63,9 +61,8 @@ func Up00002(tx *sql.Tx) error {
 		('ETH', 'Ethereum', 18, true, '%s', 'ethereum', 'ethereum'),
 		('MATIC', 'Matic', 18, true, '%s', 'matic-network', 'matic'),
 		('GOERLIETH', 'Goerli Ethereum', 18, true, '%s', 'ethereum', 'ethereum'),
-		('JEWEL', 'DFK Jewel', 18, true, '%s', 'defi-kingdoms', NULL),
 		('USD', 'United States Dollar', 6, false, NULL, NULL, NULL);
-	`, ids[0], ids[1], ids[2], ids[3], ids[4])
+	`, ids[0], ids[1], ids[2], ids[3])
 
 	_, err = tx.Exec(query2)
 	if err != nil {
@@ -87,8 +84,6 @@ func Up00002(tx *sql.Tx) error {
 		{"AVAX", "Avalanche Mainnet"},
 		{"GOERLIETH", "Nitro Goerli Rollup Testnet"},
 		{"ETH", "Arbitrum Nova Mainnet"},
-		{"JEWEL", "DFK Subnet"},
-		{"JEWEL", "DFK Testnet"},
 	}
 
 	for _, update := range updates {
