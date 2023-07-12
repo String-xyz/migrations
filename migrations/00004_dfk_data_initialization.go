@@ -51,7 +51,7 @@ func Up00004(tx *sql.Tx) error {
 
 	query2 := fmt.Sprintf(`
 		INSERT INTO asset (name, description, decimals, is_crypto, network_id, value_oracle, value_oracle_2) VALUES
-		('JEWEL', 'DFK Jewel', 18, true, '%s', 'defi-kingdoms', NULL),
+		('JEWEL', 'DFK Jewel', 18, true, '%s', 'defi-kingdoms', NULL)
 	`, ids[0])
 
 	_, err = tx.Exec(query2)
