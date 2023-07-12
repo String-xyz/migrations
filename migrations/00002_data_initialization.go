@@ -63,7 +63,7 @@ func Up00002(tx *sql.Tx) error {
 		('ETH', 'Ethereum', 18, true, '%s', 'ethereum', 'ethereum'),
 		('MATIC', 'Matic', 18, true, '%s', 'matic-network', 'matic'),
 		('GOERLIETH', 'Goerli Ethereum', 18, true, '%s', 'ethereum', 'ethereum'),
-		('JEWEL', 'DFK Jewel', 18, true, '%s', 'defi-kingdoms', ''),
+		('JEWEL', 'DFK Jewel', 18, true, '%s', 'defi-kingdoms', NULL),
 		('USD', 'United States Dollar', 6, false, NULL, NULL, NULL);
 	`, ids[0], ids[1], ids[2], ids[3], ids[4])
 
