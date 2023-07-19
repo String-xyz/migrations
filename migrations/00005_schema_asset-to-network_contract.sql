@@ -23,6 +23,11 @@ ALTER TABLE asset
     DROP CONSTRAINT asset_network_id_fkey,
 	DROP COLUMN IF EXISTS network_id;
 
+-------------------------------------------------------------------------
+-- ALTER CONTRACT TABLE -------------------------------------------------
+ALTER TABLE contract 
+	ADD COLUMN type TEXT NOT NULL;
+
 
 -------------------------------------------------------------------------
 --         ______                         ____                    
@@ -32,6 +37,12 @@ ALTER TABLE asset
 --      \____/\____/\____/____/\___/  /_____/\____/|__/|__/_/ /_/ 
 -------------------------------------------------------------------------  
 -- +goose Down
+
+-------------------------------------------------------------------------
+-- ALTER CONTRACT TABLE -------------------------------------------------
+ALTER TABLE contract 
+	DROP COLUMN IF EXISTS type;
+
 ALTER TABLE asset 
     ADD COLUMN network_id UUID REFERENCES network (id);
 
