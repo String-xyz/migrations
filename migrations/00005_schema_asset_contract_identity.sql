@@ -50,4 +50,4 @@ ALTER TABLE contract
 ALTER TABLE asset 
     DROP COLUMN IF EXISTS address;
 
-DROP TABLE identity
+DROP TABLE IF EXISTS identity;
