@@ -1,5 +1,7 @@
 github.com/String-xyz/go-lib/v2 v2.0.3 h1:Ls+kgTuZfhjv3J5zDK61ZZ/nFyip3+0AnIRk+Ciq1Ps=
 github.com/String-xyz/go-lib/v2 v2.0.3/go.mod h1:ifMnKUbxfLatYJjFMcrhgjdMicJNAlCIa1vNOoqc24w=
+github.com/String-xyz/go-lib/v2 v2.1.2 h1:tN0goj40X/6AmQSnSZ63FJr2jQlsbqQ0/ljTU4nq3tU=
+github.com/String-xyz/go-lib/v2 v2.1.2/go.mod h1:ifMnKUbxfLatYJjFMcrhgjdMicJNAlCIa1vNOoqc24w=
 github.com/coreos/go-systemd/v22 v22.3.3-0.20220203105225-a9a7ef127534/go.mod h1:Y58oyj3AT4RCenI/lSvhwexgC+NSVTIJ3seZv2GcEnc=
 github.com/dustin/go-humanize v1.0.1 h1:GzkhY7T5VNhEkwH0PVJgjz+fX1rhBrR7pRT3mDkpeCY=
 github.com/godbus/dbus/v5 v5.0.4/go.mod h1:xhWf0FNVPg57R7Z0UbKHbJfkEywrmjJnf7w5xrFpKfA=
