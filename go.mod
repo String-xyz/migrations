@@ -9,7 +9,7 @@ require (
 )
 
 require (
-	github.com/String-xyz/go-lib/v2 v2.0.3
+	github.com/String-xyz/go-lib/v2 v2.1.2
 	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.17 // indirect
